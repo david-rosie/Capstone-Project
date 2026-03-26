@@ -1,2 +1,7 @@
 streamlit
 pdfplumber
+kagglehub
+pandas
+seaborn
+scikit-learn
+pickle

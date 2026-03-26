@@ -19,7 +19,7 @@ print("Path to dataset files:", path)
 import pandas as pd
 import seaborn as sns
 
-data = pd.read_csv("/kaggle/input/breast-cancer-wisconsin-data/data.csv")
+data = pd.read_csv(path + "/data.csv")
 
 """# EDA"""
 
@@ -74,6 +74,8 @@ y_pred # This is the prediction made by "lr" model
 
 """# Evalation of the Model"""
 
+from sklearn.metrics import accuracy_score
+
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Accuracy: {accuracy: .2f}")
 
@@ -85,3 +87,14 @@ print(classification_report(y_test, y_pred))
 
 Now an application can be built around the model "lr"!
 """
+
+# Save the model and scaler for deployment
+import pickle
+
+with open('breast_cancer_model.pkl', 'wb') as f:
+    pickle.dump(lr, f)
+
+with open('scaler.pkl', 'wb') as f:
+    pickle.dump(scaler, f)
+
+print("Model and scaler saved successfully!")
