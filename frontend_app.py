@@ -14,36 +14,36 @@ load_dotenv()
 
 # Feature descriptions dictionary
 FEATURE_DESCRIPTIONS = {
-    'radius_mean': 'mean of distances from center to points on the perimeter',
-    'texture_mean': 'standard deviation of gray-scale values',
-    'perimeter_mean': 'mean size of the core tumor',
+    'radius_mean': 'Mean of distances from center to points on the perimeter',
+    'texture_mean': 'Standard deviation of gray-scale values',
+    'perimeter_mean': 'Mean size of the core tumor',
     'area_mean': 'No description available',
-    'smoothness_mean': 'mean of local variation in radius lengths',
-    'compactness_mean': 'mean of perimeter^2 / area - 1.0',
-    'concavity_mean': 'mean of severity of concave portions of the contour',
-    'concave_points_mean': 'mean for number of concave portions of the contour',
+    'smoothness_mean': 'Mean of local variation in radius lengths',
+    'compactness_mean': 'Mean of perimeter^2 / area - 1.0',
+    'concavity_mean': 'Mean of severity of concave portions of the contour',
+    'concave_points_mean': 'Mean for number of concave portions of the contour',
     'symmetry_mean': 'No description available',
-    'fractal_dimension_mean': 'mean for "coastline approximation" - 1',
-    'radius_se': 'standard error for the mean of distances from center to points on the perimeter',
-    'texture_se': 'standard error for standard deviation of gray-scale values',
+    'fractal_dimension_mean': 'Mean for "coastline approximation" - 1',
+    'radius_se': 'Standard error for the mean of distances from center to points on the perimeter',
+    'texture_se': 'Standard error for standard deviation of gray-scale values',
     'perimeter_se': 'No description available',
     'area_se': 'No description available',
-    'smoothness_se': 'standard error for local variation in radius lengths',
-    'compactness_se': 'standard error for perimeter^2 / area - 1.0',
-    'concavity_se': 'standard error for severity of concave portions of the contour',
-    'concave_points_se': 'standard error for number of concave portions of the contour',
+    'smoothness_se': 'Standard error for local variation in radius lengths',
+    'compactness_se': 'Standard error for perimeter^2 / area - 1.0',
+    'concavity_se': 'Standard error for severity of concave portions of the contour',
+    'concave_points_se': 'Standard error for number of concave portions of the contour',
     'symmetry_se': 'No description available',
-    'fractal_dimension_se': 'standard error for "coastline approximation" - 1',
-    'radius_worst': '"worst" or largest mean value for mean of distances from center to points on the perimeter',
-    'texture_worst': '"worst" or largest mean value for standard deviation of gray-scale values',
+    'fractal_dimension_se': 'Standard error for "coastline approximation" - 1',
+    'radius_worst': '"Worst" or largest mean value for mean of distances from center to points on the perimeter',
+    'texture_worst': '"Worst" or largest mean value for standard deviation of gray-scale values',
     'perimeter_worst': 'No description available',
     'area_worst': 'No description available',
-    'smoothness_worst': '"worst" or largest mean value for local variation in radius lengths',
-    'compactness_worst': '"worst" or largest mean value for perimeter^2 / area - 1.0',
-    'concavity_worst': '"worst" or largest mean value for severity of concave portions of the contour',
-    'concave_points_worst': '"worst" or largest mean value for number of concave portions of the contour',
+    'smoothness_worst': '"Worst" or largest mean value for local variation in radius lengths',
+    'compactness_worst': '"Worst" or largest mean value for perimeter^2 / area - 1.0',
+    'concavity_worst': '"Worst" or largest mean value for severity of concave portions of the contour',
+    'concave_points_worst': '"Worst" or largest mean value for number of concave portions of the contour',
     'symmetry_worst': 'No description available',
-    'fractal_dimension_worst': '"worst" or largest mean value for "coastline approximation" - 1'
+    'fractal_dimension_worst': '"Worst" or largest mean value for "coastline approximation" - 1'
 }
 
 st.set_page_config(page_title="Medical Notes Checker - Breast Cancer", layout="wide")
@@ -53,6 +53,7 @@ st.header("File Upload")
 st.write("Upload structured or unstructured medical notes in PDF format to extract their text content.")
 
 uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
+st.markdown("The content should include the ***mean***, ***worst value***, and ***standard error*** of the radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, fractal dimension.")
 
 if uploaded_file is not None:
     try:
