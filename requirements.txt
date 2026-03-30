@@ -4,4 +4,5 @@ kagglehub
 pandas
 seaborn
 scikit-learn
-pickle
+mistralai
+python-dotenv
