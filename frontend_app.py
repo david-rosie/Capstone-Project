@@ -46,8 +46,8 @@ FEATURE_DESCRIPTIONS = {
     'fractal_dimension_worst': '"Worst" or largest mean value for "coastline approximation" - 1'
 }
 
-st.set_page_config(page_title="Medical Notes Checker - Breast Cancer", layout="wide")
-st.title("Medical Notes Checker: Breast Cancer ⚕️")
+st.set_page_config(page_title="Medical Notes Screener - Breast Cancer", layout="wide")
+st.title("Medical Notes Screener: Breast Cancer ⚕️")
 
 st.header("File Upload")
 st.write("Upload structured or unstructured medical notes in PDF format to extract their text content.")

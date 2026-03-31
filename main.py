@@ -18,16 +18,16 @@ def main():
     # Get the directory where this script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
     ml_analysis_script = os.path.join(script_dir, "breast_cancer_ml_analysis.py")
-    streamlit_app = os.path.join(script_dir, "streamlit_app.py")
+    frontend_app = os.path.join(script_dir, "frontend_app.py")
     
     # Check if ML analysis script exists
     if not os.path.exists(ml_analysis_script):
         print(f"Error: breast_cancer_ml_analysis.py not found at {ml_analysis_script}")
         sys.exit(1)
     
-    # Check if streamlit_app.py exists
-    if not os.path.exists(streamlit_app):
-        print(f"Error: streamlit_app.py not found at {streamlit_app}")
+    # Check if frontend_app.py exists
+    if not os.path.exists(frontend_app):
+        print(f"Error: frontend_app.py not found at {frontend_app}")
         sys.exit(1)
     
     # Run the ML analysis script first
@@ -45,13 +45,13 @@ def main():
         print(f"Error running ML analysis script: {e}")
         sys.exit(1)
     
-    # Run the Streamlit app
+    # Run the frontend app
     print("\n" + "=" * 60)
-    print("Starting Streamlit Application...")
+    print("Starting Frontend Application...")
     print("=" * 60)
     try:
         subprocess.run(
-            [sys.executable, "-m", "streamlit", "run", streamlit_app],
+            [sys.executable, "-m", "streamlit", "run", frontend_app],
             check=False
         )
     except KeyboardInterrupt:
