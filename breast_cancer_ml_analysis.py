@@ -35,6 +35,9 @@ data.drop(["Unnamed: 32", "id"], axis=1, inplace=True) # Drop empty column and i
 
 data.diagnosis = [1 if value == "M" else 0 for value in data.diagnosis] # Convert M (malignant) and B(benign) into 1 and 0 integers.
 
+# Rename columns to use underscores instead of spaces for consistency
+data.columns = data.columns.str.replace(' ', '_')
+
 data['diagnosis'].value_counts().plot(kind='bar') # Plot to see distribution of diagnosis in dataset
 
 # Divide into target variable and predictors

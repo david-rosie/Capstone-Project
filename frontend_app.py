@@ -46,11 +46,12 @@ FEATURE_DESCRIPTIONS = {
     'fractal_dimension_worst': '"Worst" or largest mean value for "coastline approximation" - 1'
 }
 
-st.set_page_config(page_title="Medical Notes Screener - Breast Cancer", layout="wide")
-st.title("Medical Notes Screener: Breast Cancer ⚕️")
+st.set_page_config(page_title="AI Medical Notes Screener - Breast Cancer", layout="wide")
+st.title("AI Medical Notes Screener: Breast Cancer ⚕️")
 
 st.header("File Upload")
-st.write("Upload structured or unstructured medical notes in PDF format to extract their text content.")
+st.write("An AI agent searches file for key parameters used in breast cancer diagnosis and a machine learning modelpredicts if the tumor is likely to be malignant or benign based on the extracted data.")
+st.write("Upload structured or unstructured medical notes in PDF format for analysis.")
 
 uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 st.markdown("The content should include the ***mean***, ***worst value***, and ***standard error*** of the radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, fractal dimension.")
@@ -60,25 +61,17 @@ if uploaded_file is not None:
         bytes_data = uploaded_file.read()
 
         with pdfplumber.open(BytesIO(bytes_data)) as pdf:
-            st.sidebar.header("Document Info")
-            st.sidebar.write("Pages:", len(pdf.pages))
-
-            metadata = pdf.metadata
-            if metadata:
-                st.sidebar.write("Title:", metadata.get("Title", ""))
-                st.sidebar.write("Author:", metadata.get("Author", ""))
-                st.sidebar.write("Subject:", metadata.get("Subject", ""))
-                st.sidebar.write("Producer:", metadata.get("Producer", ""))
-
             num_pages = len(pdf.pages)
             
             # Handle single vs multiple pages
             if num_pages == 1:
                 selected_pages = (1, 1)
             else:
-                selected_pages = st.slider("Select pages to extract", 1, num_pages, (1, min(5, num_pages)))
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    selected_pages = st.slider("Select pages to extract", 1, num_pages, (1, min(5, num_pages)))
             
-            if st.button("Extract text"):
+            if st.button("Screen Notes for Breast Cancer Diagnosis"):
                 start_page, end_page = selected_pages
                 extracted_text = []
                 for p in range(start_page - 1, end_page):
@@ -112,7 +105,7 @@ if uploaded_file is not None:
                             
                             response = client.beta.conversations.start(
                                 agent_id="ag_019d296fed7e7178806606b6787af470",
-                                agent_version=3,
+                                agent_version=6,
                                 inputs=inputs,
                             )
                         
@@ -168,37 +161,76 @@ if uploaded_file is not None:
                                     'symmetry_worst', 'fractal_dimension_worst'
                                 ]
                                 
-                                # Create feature vector with extracted values, filling missing with 0
-                                feature_vector = []
+                                # Normalize extracted data: convert space-separated names to underscores
+                                normalized_data = {}
+                                for key, value in extracted_data.items():
+                                    normalized_key = key.replace(' ', '_')
+                                    normalized_data[normalized_key] = value
+                                extracted_data = normalized_data
+                                
+                                # Check if all required parameters are present and valid
+                                missing_parameters = []
+                                invalid_parameters = []
+                                
                                 for feature in feature_names:
-                                    if feature in extracted_data:
-                                        feature_vector.append(extracted_data[feature])
+                                    if feature not in extracted_data:
+                                        missing_parameters.append(feature)
                                     else:
-                                        feature_vector.append(0.0)
+                                        # Check if value is valid (not None, NaN, or non-numeric)
+                                        value = extracted_data[feature]
+                                        try:
+                                            numeric_value = float(value)
+                                            # Check if it's NaN
+                                            if pd.isna(numeric_value):
+                                                invalid_parameters.append((feature, "NaN value"))
+                                        except (ValueError, TypeError):
+                                            invalid_parameters.append((feature, f"non-numeric value: {value}"))
                                 
-                                # Create DataFrame and predict
-                                input_df = pd.DataFrame([feature_vector], columns=feature_names)
-                                
-                                # Load model and scaler
-                                with open('breast_cancer_model.pkl', 'rb') as f:
-                                    model = pickle.load(f)
-                                with open('scaler.pkl', 'rb') as f:
-                                    scaler = pickle.load(f)
-                                
-                                # Scale and predict
-                                scaled_input = scaler.transform(input_df.values)
-                                prediction = model.predict(scaled_input)
-                                
-                                # Display prediction result with color coding
-                                st.subheader("ML Model Prediction Result")
-                                diagnosis = "Malignant" if prediction[0] == 1 else "Benign"
-                                
-                                if diagnosis == "Benign":
-                                    st.markdown(f"<p style='font-size: 18px; font-weight: bold;'>Diagnosis: <span style='color: green;'>{diagnosis}</span> ✅</p>", unsafe_allow_html=True)
+                                if missing_parameters or invalid_parameters:
+                                    # Display error if parameters are missing or invalid
+                                    if missing_parameters:
+                                        st.error(f"❌ Cannot run ML prediction - Missing {len(missing_parameters)} required parameter(s):")
+                                        st.write("Missing parameters:")
+                                        for param in missing_parameters:
+                                            st.write(f"  • {param}")
+                                    
+                                    if invalid_parameters:
+                                        st.error(f"❌ Invalid parameter values detected - {len(invalid_parameters)} parameter(s) with invalid data:")
+                                        st.write("Invalid parameters:")
+                                        for param, reason in invalid_parameters:
+                                            st.write(f"  • {param}: {reason}")
+                                    
+                                    st.info("Please ensure the medical notes contain valid numeric measurements for all required features (mean, standard error, and worst values).")
                                 else:
-                                    st.markdown(f"<p style='font-size: 18px; font-weight: bold;'>Diagnosis: <span style='color: red;'>{diagnosis}</span> ⚠️</p>", unsafe_allow_html=True)
-                                
-                                st.info("*This is a machine learning prediction and should not be relied upon as a medical diagnosis. Always consult a healthcare professional for medical advice.*")
+                                    # All parameters present and valid - proceed with prediction
+                                    # Create feature vector with extracted values
+                                    feature_vector = []
+                                    for feature in feature_names:
+                                        feature_vector.append(float(extracted_data[feature]))
+                                    
+                                    # Create DataFrame and predict
+                                    input_df = pd.DataFrame([feature_vector], columns=feature_names)
+                                    
+                                    # Load model and scaler
+                                    with open('breast_cancer_model.pkl', 'rb') as f:
+                                        model = pickle.load(f)
+                                    with open('scaler.pkl', 'rb') as f:
+                                        scaler = pickle.load(f)
+                                    
+                                    # Scale and predict
+                                    scaled_input = scaler.transform(input_df.values)
+                                    prediction = model.predict(scaled_input)
+                                    
+                                    # Display prediction result with color coding
+                                    st.subheader("ML Model Prediction Result")
+                                    diagnosis = "Malignant" if prediction[0] == 1 else "Benign"
+                                    
+                                    if diagnosis == "Benign":
+                                        st.markdown(f"<p style='font-size: 18px; font-weight: bold;'>Diagnosis: <span style='color: green;'>{diagnosis}</span> ✅</p>", unsafe_allow_html=True)
+                                    else:
+                                        st.markdown(f"<p style='font-size: 18px; font-weight: bold;'>Diagnosis: <span style='color: red;'>{diagnosis}</span> ⚠️</p>", unsafe_allow_html=True)
+                                    
+                                    st.info("*This is a machine learning prediction and should not be relied upon as a medical diagnosis. Always consult a healthcare professional for medical advice.*")
                             else:
                                 st.warning("Could not extract JSON from Mistral response")
                                 
