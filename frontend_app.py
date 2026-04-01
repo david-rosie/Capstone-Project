@@ -49,6 +49,8 @@ FEATURE_DESCRIPTIONS = {
 st.set_page_config(page_title="AI Medical Notes Screener - Breast Cancer", layout="wide")
 st.title("AI Medical Notes Screener: Breast Cancer ⚕️")
 
+st.markdown("<p style='color: yellow;'><b>This application is in the pre-clinical trial stage of development.</b></p>", unsafe_allow_html=True)
+
 st.header("File Upload")
 st.write("An AI agent searches file for key parameters used in breast cancer diagnosis and a machine learning modelpredicts if the tumor is likely to be malignant or benign based on the extracted data.")
 st.write("Upload structured or unstructured medical notes in PDF format for analysis.")
@@ -231,6 +233,12 @@ if uploaded_file is not None:
                                         st.markdown(f"<p style='font-size: 18px; font-weight: bold;'>Diagnosis: <span style='color: red;'>{diagnosis}</span> ⚠️</p>", unsafe_allow_html=True)
                                     
                                     st.info("*This is a machine learning prediction and should not be relied upon as a medical diagnosis. Always consult a healthcare professional for medical advice.*")
+                                    
+                                    with st.expander("How can I rely on this ML based diagnosis ❓"):
+                                        st.write("This application is in the pre-clinical trial stage of development.")
+                                        st.write("")
+                                        st.write("The machine learning prediction model is based on the Breast Cancer Wisconsin (Diagnostic) Data Set, reporting ~99% precision and ~98% recall of breast cancer diagnosis within the dataset.")
+                                        st.markdown("<span style='color: yellow;'>Note: These precision and recall statistics cannot be loosely applied to the wider population, clinical trials are necessary to determine wider applicability.</span>", unsafe_allow_html=True)
                             else:
                                 st.warning("Could not extract JSON from Mistral response")
                                 
