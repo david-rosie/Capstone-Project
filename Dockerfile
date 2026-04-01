@@ -19,22 +19,30 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the project files into the container
 COPY . .
 
-# Create a .streamlit directory and config
+# Create a .streamlit directory and config optimized for Cloud Run
 RUN mkdir -p ~/.streamlit
 
-# Add Streamlit configuration for Docker
+# Add Streamlit configuration for Cloud Run (faster startup, handles cloud environment)
 RUN echo "\
 [server]\n\
-port = 8501\n\
+port = 8080\n\
 headless = true\n\
-runOnSave = true\n\
+runOnSave = false\n\
+enableXsrfProtection = false\n\
+maxUploadSize = 200\n\
+enableCORS = false\n\
+\n\
+[client]\n\
+showErrorDetails = false\n\
 " > ~/.streamlit/config.toml
 
-# Expose port 8501 (Streamlit default)
-EXPOSE 8501
+# Set environment variables for faster startup
+ENV PYTHONUNBUFFERED=1
+ENV STREAMLIT_SERVER_PORT=8080
+ENV STREAMLIT_SERVER_HEADLESS=true
 
-# Health check
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+# Expose port 8080 (Cloud Run default)
+EXPOSE 8080
 
-# Run the Streamlit app
-CMD ["streamlit", "run", "frontend_app.py"]
+# Use exec form to ensure proper signal handling
+CMD exec streamlit run frontend_app.py --server.port=8080 --server.address=0.0.0.0

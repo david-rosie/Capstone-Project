@@ -1,0 +1,26 @@
+# Files and directories to ignore for gcloud builds
+.git
+.gitignore
+.gitattributes
+.venv
+venv
+ENV
+env
+.vscode
+.idea
+__pycache__
+*.py[cod]
+*.egg-info
+dist
+build
+Dummy*.docx
+Dummy*.pdf
+*.pptx
+~$*.pptx
+.DS_Store
+Thumbs.db
+.env
+*.log
+DOCKER.md
+docker-compose.yml
+Dockerfile.old
