@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  breast-cancer-screener:
+    build: .
+    container_name: breast-cancer-ml-app
+    ports:
+      - "8501:8501"
+    environment:
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+    volumes:
+      - ./uploads:/app/uploads
+    env_file:
+      - .env
+    restart: unless-stopped
